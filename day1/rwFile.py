@@ -12,7 +12,7 @@ def eachFile(filepath):
             continue
         eachFile(child)
    
-# 遍历
+# 写
 def readFile(filenames):
         fopen = open(filenames, 'r',encoding='utf-8')
         fileread = fopen.read()
