@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 sale = pd.read_excel("data2.xls",index_col=0)
 stat = sale.describe()
-# print(sale[sale<500])
+print(stat)
 d = sale.count()
 def select(low,high):
 	ld = sale[sale>low].dropna(axis=0,how='any')
