@@ -67,5 +67,8 @@ for i in range(0,100):
     crawlProductComment(url,i)
     df2 = pd.DataFrame({'商品全名':productNames,'用户评论时间':coms,'用户评论内容':contents})
     df2.to_csv('a.csv')
+    file_name = open('restxt.txt','w',encoding='utf-8')
+    file_name.writelines(contents)
+    file_name.close()
     #设置休眠时间
     # time.sleep(random.randint(31,33))
