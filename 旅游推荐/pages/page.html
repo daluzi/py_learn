@@ -1,0 +1,148 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<style type="text/css">
+		body, html{width: 100%;height: 100%;margin:0;font-family:"微软雅黑";}
+	</style>
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=xjKCPtkYqkGepoNUxpQi7Uf2TUjq8GVa"></script>
+	<title>城市名定位</title>
+	<link rel="stylesheet" type="text/css" href="../css/page.css">
+	<script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+	<script src="https://www.amcharts.com/lib/3/serial.js"></script>
+	<script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+	<link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+	<script src="https://www.amcharts.com/lib/3/themes/black.js"></script>
+	</head>
+<body>
+    <div class="insert">   
+    	<div class="words">
+    		<div class="wod">
+    			<div>
+    				<p class="start" style="margin-left: 80px">起点:</p>
+    				<p class="start" style="margin-left: 80px">支出预算:</p>
+    				<p class="start">计划游玩天数:</p>
+    			</div>
+    		</div>
+    		<div class="showod">
+    			<div>
+    				<input id="from_" type="text" value="" onchange="searchByStationName();" />
+    				<input type="text" name="costs" id="costs">
+    				<input type="text" name="days" id="days">
+    			</div>
+    		</div>
+    	</div>
+    	<div class="showwords">
+    		<div class="wod">
+    			<div>
+    				<p class="start" style="margin-left: 70px">最佳旅游地点:</p>
+    				<p class="start">相聚距离:</p>
+    			</div>
+    		</div>
+    		<div class="showod">
+    			<div>
+    				<input id="to_" type="text" value="" onchange="searchByStationName2();" />
+    				<input type="text" value="" id="showDis">
+    			</div>
+    		</div>
+    	</div>
+    	<input type="button" value="点击推荐"  id="clickto" />
+        <div id="container">
+        </div>
+    </div>
+    <div class="chart">
+    	<div id="chartdiv"></div>
+    	<img src="../images/costs.png">
+    	<img src="../images/dailycost.png">
+    	<img src="../images/rest.png">
+    	<img src="../images/sumer.png">
+    	<img src="../images/winter.png">
+    	<img src="../images/sumerrank.png">
+    	<img src="../images/winterrank.png">
+    </div>
+</body>
+<script type="text/javascript">
+	var map = new BMap.Map("container");
+	map.centerAndZoom("重庆", 12);
+    map.enableScrollWheelZoom();    //启用滚轮放大缩小，默认禁用
+    map.enableContinuousZoom();    //启用地图惯性拖拽，默认禁用
+
+    map.addControl(new BMap.NavigationControl());  //添加默认缩放平移控件
+    map.addControl(new BMap.OverviewMapControl()); //添加默认缩略地图控件
+    map.addControl(new BMap.OverviewMapControl({ isOpen: true, anchor: BMAP_ANCHOR_BOTTOM_RIGHT }));   //右下角，打开
+
+    var localSearch = new BMap.LocalSearch(map);
+    localSearch.enableAutoViewport(); //允许自动调节窗体大小
+    var point1;
+    var point2;;
+    
+    function searchByStationName() {
+	    map.clearOverlays();//清空原来的标注
+	    var keyword = document.getElementById("from_").value;
+	    localSearch.setSearchCompleteCallback(function (searchResult) {
+	    	var poi = searchResult.getPoi(0);
+	    	point1 = poi.point;
+	        //alert(point1);
+	        // document.getElementById("result1_").value = poi.point.lng + "," + poi.point.lat;
+	        map.centerAndZoom(poi.point, 13);
+	        var marker = new BMap.Marker(new BMap.Point(poi.point.lng, poi.point.lat));  // 创建标注，为要查询的地方对应的经纬度
+	        map.addOverlay(marker);
+	        var content = document.getElementById("from_").value + "<br/><br/>经度：" + poi.point.lng + "<br/>纬度：" + poi.point.lat;
+	        var infoWindow = new BMap.InfoWindow("<p style='font-size:14px;'>" + content + "</p>");
+	        marker.addEventListener("click", function () { this.openInfoWindow(infoWindow); });
+	        // marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+	    });
+	    localSearch.search(keyword);
+	} 
+	function searchByStationName2() {
+	    map.clearOverlays();//清空原来的标注
+	    var keyword = document.getElementById("to_").value;
+	    localSearch.setSearchCompleteCallback(function (searchResult) {
+	    	var poi = searchResult.getPoi(0);
+	    	point2=poi.point;
+	        // document.getElementById("result2_").value = poi.point.lng + "," + poi.point.lat;
+	        map.centerAndZoom(poi.point, 13);
+	        var marker = new BMap.Marker(new BMap.Point(poi.point.lng, poi.point.lat));  // 创建标注，为要查询的地方对应的经纬度
+	        map.addOverlay(marker);
+	        var content = document.getElementById("to_").value + "<br/><br/>经度：" + poi.point.lng + "<br/>纬度：" + poi.point.lat;
+	        var infoWindow = new BMap.InfoWindow("<p style='font-size:14px;'>" + content + "</p>");
+	        marker.addEventListener("click", function () { this.openInfoWindow(infoWindow); });
+	        // marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+	    });
+	    localSearch.search(keyword);
+	}
+	function getDistance(){
+	    var distance = map.getDistance(point1,point2);
+	    // alert(distance);
+	    // distance = distance.toFixed(2);
+	    var showDis = document.querySelector("#showDis");
+	    showDis.value = distance+'米';
+	}
+
+	var flag = true,//状态true为正常的状态,false为放大的状态
+       	imgH,//图片的高度
+        imgW,//图片的宽度
+        ch = document.getElementsByClassName("chart")[0];
+        imgs = ch.getElementsByTagName('img');//图片元素
+        b = document.body;
+    for(let i = 0;i < imgs.length;i++) {
+    	imgs[i].onclick =  function(){
+    		console.log(imgs[i].parentNode);
+	       //图片点击事件
+	       	if(flag){
+	            //图片为正常状态,设置图片宽高为现在宽高的2倍
+	            flag = false;//把状态设为放大状态
+	            imgs[i].classList.add("change");
+	      	}else{
+	            //图片为放大状态,设置图片宽高为现在宽高的二分之一
+	            flag = true;//把状态设为正常状态
+	            imgs[i].classList.remove("change");
+	        }
+		}
+    }
+
+</script>
+<!-- <script type="text/javascript" src="../js/ajax.js"></script> -->
+<script type="text/javascript" src="../js/canvas-nest.js"></script>
+<script type="text/javascript" src="../js/amcharts.js"></script>
+</head>

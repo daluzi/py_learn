@@ -1,7 +1,10 @@
 from snownlp import SnowNLP
 import xlrd
 import jieba
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud
 
+font = r'F:\py学习\text-py\day6\msyh.ttf'
 def open_excel(file= '京东商品卫龙评论.xlsx'):
     try:
         data = xlrd.open_workbook(file)
@@ -44,10 +47,24 @@ if __name__ =="__main__":
 			textjd = SnowNLP(fline)
 			# print(textjd.sentences,textjd.sentiments)
 			p.append(textjd.sentiments)
-	print(p)
+	# print(p)
+	#分词
 	jieba.load_userdict("user.dict")
 	stop_words = ''
 	with open("stopword.dict",encoding='utf-8') as f:
 		stop_words = f.read().split('\n')
 	# print(stop_words)
-	words_jieba = jieba.cut()
+	file_name1 = 'restxtweilong.txt'
+	data = []
+	for line in open(file_name1,encoding='utf-8'):
+		line = line.split()
+		data.append(line)
+	# text = open('restxtweilong.txt',encoding='utf-8')
+	words_jieba = jieba.cut(data,cut_all=False)
+	# words_cut = "".join(words_jieba)
+	#词云
+	words_uni = [x for x in words_jieba if x not in stop_words]
+	words_cut2 = "".join(words_uni)
+	words_wordcloud = WordCloud(font_path = font).generate(words_cut2)
+	plt.imshow(words_wordcloud)
+	plt.show()
